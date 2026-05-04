@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Web Agency CRM & Project Management System</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    :root {
+      color-scheme: light;
+    }
+
+    body {
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #f5f7fb;
+      color: #111827;
+    }
+
+    .view {
+      display: none;
+    }
+
+    .view.active {
+      display: block;
+      animation: fadeIn 180ms ease-out;
+    }
+
+    .nav-item.active {
+      background: #eef2ff;
+      color: #4338ca;
+      box-shadow: inset 3px 0 0 #4f46e5;
+    }
+
+    .kanban-column {
+      min-width: 292px;
+    }
+
+    .lead-card.dragging {
+      opacity: 0.55;
+      transform: rotate(1deg);
+    }
+
+    .drop-target {
+      outline: 2px dashed #818cf8;
+      outline-offset: -6px;
+      background: #f0f4ff;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <div class="min-h-screen lg:flex">
+    <aside class="fixed inset-y-0 left-0 z-30 hidden w-72 border-r border-slate-200 bg-white lg:flex lg:flex-col">
+      <div class="flex h-18 items-center gap-3 border-b border-slate-200 px-6 py-5">
+        <div class="grid h-11 w-11 place-items-center rounded-lg bg-indigo-600 text-white shadow-sm">
+          <i data-lucide="layout-dashboard" class="h-5 w-5"></i>
+        </div>
+        <div>
+          <p class="text-sm font-semibold text-slate-500">Agency OS</p>
+          <h1 class="text-lg font-bold text-slate-950">Web Brand CRM</h1>
+        </div>
+      </div>
+
+      <nav id="sidebarNav" class="flex-1 space-y-1 overflow-y-auto px-3 py-4">
+        <button class="nav-item active flex w-full items-center gap-3 rounded-lg px-4 py-3 text-left text-sm font-semibold text-slate-600 transition hover:bg-slate-100" data-view="dashboard">
+          <i data-lucide="gauge" class="h-4 w-4"></i> Dashboard
+        </button>
+        <button class="nav-item flex w-full items-center gap-3 rounded-lg px-4 py-3 text-left text-sm font-semibold text-slate-600 transition hover:bg-slate-100" data-view="pipeline">
+          <i data-lucide="columns-3" class="h-4 w-4"></i> CRM Pipeline
+        </button>
+        <button class="nav-item flex w-full items-center gap-3 rounded-lg px-4 py-3 text-left text-sm font-semibold text-slate-600 transition hover:bg-slate-100" data-view="clients">
+          <i data-lucide="users" class="h-4 w-4"></i> Clients
+        </button>
+        <button class="nav-item flex w-full items-center gap-3 rounded-lg px-4 py-3 text-left text-sm font-semibold text-slate-600 transition hover:bg-slate-100" data-view="projects">
+          <i data-lucide="folder-kanban" class="h-4 w-4"></i> Projects
+        </button>
+        <button class="nav-item flex w-full items-center gap-3 rounded-lg px-4 py-3 text-left text-sm font-semibold text-slate-600 transition hover:bg-slate-100" data-view="tasks">
+          <i data-lucide="check-square" class="h-4 w-4"></i> Tasks
+        </button>
+        <button class="nav-item flex w-full items-center gap-3 rounded-lg px-4 py-3 text-left text-sm font-semibold text-slate-600 transition hover:bg-slate-100" data-view="briefs">
+          <i data-lucide="file-pen-line" class="h-4 w-4"></i> Briefs
+        </button>
+        <button class="nav-item flex w-full items-center gap-3 rounded-lg px-4 py-3 text-left text-sm font-semibold text-slate-600 transition hover:bg-slate-100" data-view="communication">
+          <i data-lucide="messages-square" class="h-4 w-4"></i> Communication
+        </button>
+        <button class="nav-item flex w-full items-center gap-3 rounded-lg px-4 py-3 text-left text-sm font-semibold text-slate-600 transition hover:bg-slate-100" data-view="hosting">
+          <i data-lucide="globe-2" class="h-4 w-4"></i> Hosting & Domains
+        </button>
+        <button class="nav-item flex w-full items-center gap-3 rounded-lg px-4 py-3 text-left text-sm font-semibold text-slate-600 transition hover:bg-slate-100" data-view="maintenance">
+          <i data-lucide="wrench" class="h-4 w-4"></i> Maintenance
+        </button>
+        <button class="nav-item flex w-full items-center gap-3 rounded-lg px-4 py-3 text-left text-sm font-semibold text-slate-600 transition hover:bg-slate-100" data-view="reports">
+          <i data-lucide="bar-chart-3" class="h-4 w-4"></i> Reports
+        </button>
+        <button class="nav-item flex w-full items-center gap-3 rounded-lg px-4 py-3 text-left text-sm font-semibold text-slate-600 transition hover:bg-slate-100" data-view="settings">
+          <i data-lucide="settings" class="h-4 w-4"></i> Settings
+        </button>
+      </nav>
+
+      <div class="m-4 rounded-lg border border-indigo-100 bg-indigo-50 p-4">
+        <p class="text-sm font-bold text-indigo-950">Client pitch</p>
+        <p class="mt-2 text-xs leading-5 text-indigo-800">Centralized dashboard for leads, projects, calls, Gmail, hosting, and support.</p>
+      </div>
+    </aside>
+
+    <main class="min-w-0 flex-1 lg:ml-72">
+      <header class="sticky top-0 z-20 border-b border-slate-200 bg-white/90 backdrop-blur">
+        <div class="flex flex-col gap-4 px-4 py-4 sm:px-6 xl:flex-row xl:items-center xl:justify-between">
+          <div>
+            <p class="text-sm font-semibold text-indigo-600">Gmail Streak CRM Upgrade</p>
+            <h2 id="pageTitle" class="mt-1 text-2xl font-bold text-slate-950">Dashboard</h2>
+          </div>
+          <div class="flex flex-wrap items-center gap-3">
+            <select id="mobileViewSelect" class="h-11 rounded-lg border border-slate-200 bg-white px-3 text-sm font-bold text-slate-700 outline-none lg:hidden">
+              <option value="dashboard">Dashboard</option>
+              <option value="pipeline">CRM Pipeline</option>
+              <option value="clients">Clients</option>
+              <option value="projects">Projects</option>
+              <option value="tasks">Tasks</option>
+              <option value="briefs">Briefs</option>
+              <option value="communication">Communication</option>
+              <option value="hosting">Hosting & Domains</option>
+              <option value="maintenance">Maintenance</option>
+              <option value="reports">Reports</option>
+              <option value="settings">Settings</option>
+            </select>
+            <div class="relative min-w-0 flex-1 sm:w-80 sm:flex-none">
+              <i data-lucide="search" class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"></i>
+              <input class="h-11 w-full rounded-lg border border-slate-200 bg-slate-50 pl-10 pr-3 text-sm outline-none transition focus:border-indigo-400 focus:bg-white focus:ring-4 focus:ring-indigo-100" placeholder="Search clients, projects, invoices..." />
+            </div>
+            <button class="grid h-11 w-11 place-items-center rounded-lg border border-slate-200 bg-white text-slate-600 transition hover:bg-slate-50" aria-label="Notifications">
+              <i data-lucide="bell" class="h-5 w-5"></i>
+            </button>
+            <button class="flex h-11 items-center gap-2 rounded-lg bg-indigo-600 px-4 text-sm font-bold text-white shadow-sm transition hover:bg-indigo-700">
+              <i data-lucide="plus" class="h-4 w-4"></i> New Lead
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <div class="px-4 py-6 sm:px-6">
+        <section id="dashboard" class="view active">
+          <div class="mb-5 rounded-lg border border-indigo-100 bg-white p-5 shadow-sm">
+            <div class="grid gap-5 lg:grid-cols-[1.3fr_.7fr] lg:items-center">
+              <div>
+                <span class="inline-flex items-center gap-2 rounded-full bg-indigo-50 px-3 py-1 text-xs font-bold text-indigo-700">
+                  <i data-lucide="sparkles" class="h-3.5 w-3.5"></i>
+                  Scalable SaaS replacement for Gmail Streak
+                </span>
+                <h3 class="mt-3 text-2xl font-bold text-slate-950">Centralized agency command center for leads, projects, hosting, maintenance, and communication.</h3>
+                <p class="mt-2 max-w-3xl text-sm leading-6 text-slate-600">This interface converts scattered Gmail pipeline labels into a visual operating system where every client, payment, brief, project stage, email, call, domain, and support issue is tracked in one place.</p>
+              </div>
+              <div class="grid grid-cols-2 gap-3 text-sm">
+                <div class="rounded-lg bg-slate-50 p-4"><b class="block text-slate-950">Gmail Streak</b><span class="mt-1 block text-slate-500">Label based, hard to scale</span></div>
+                <div class="rounded-lg bg-indigo-50 p-4"><b class="block text-indigo-950">Agency OS</b><span class="mt-1 block text-indigo-700">Visual, automated, team-ready</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+            <article class="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+              <div class="flex items-center justify-between">
+                <p class="text-sm font-semibold text-slate-500">Total Leads</p>
+                <span class="rounded-md bg-blue-50 p-2 text-blue-600"><i data-lucide="user-plus" class="h-4 w-4"></i></span>
+              </div>
+              <p class="mt-4 text-3xl font-bold">428</p>
+              <p class="mt-2 text-sm text-emerald-600">+18 this week</p>
+            </article>
+            <article class="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+              <div class="flex items-center justify-between">
+                <p class="text-sm font-semibold text-slate-500">Active Projects</p>
+                <span class="rounded-md bg-indigo-50 p-2 text-indigo-600"><i data-lucide="folder-open" class="h-4 w-4"></i></span>
+              </div>
+              <p class="mt-4 text-3xl font-bold">64</p>
+              <p class="mt-2 text-sm text-slate-500">31 design, 22 dev, 11 live prep</p>
+            </article>
+            <article class="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+              <div class="flex items-center justify-between">
+                <p class="text-sm font-semibold text-slate-500">Revenue Monthly</p>
+                <span class="rounded-md bg-emerald-50 p-2 text-emerald-600"><i data-lucide="wallet" class="h-4 w-4"></i></span>
+              </div>
+              <p class="mt-4 text-3xl font-bold">$82.4k</p>
+              <p class="mt-2 text-sm text-emerald-600">+12.6% vs last month</p>
+            </article>
+            <article class="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+              <div class="flex items-center justify-between">
+                <p class="text-sm font-semibold text-slate-500">Critical Issues</p>
+                <span class="rounded-md bg-red-50 p-2 text-red-600"><i data-lucide="triangle-alert" class="h-4 w-4"></i></span>
+              </div>
+              <p class="mt-4 text-3xl font-bold">7</p>
+              <p class="mt-2 text-sm text-red-600">3 need same-day action</p>
+            </article>
+          </div>
+
+          <div class="mt-4 grid gap-4 lg:grid-cols-7">
+            <article class="rounded-lg border border-slate-200 bg-white p-5 shadow-sm lg:col-span-4">
+              <div class="flex items-center justify-between">
+                <h3 class="font-bold text-slate-950">Sales Graph</h3>
+                <span class="rounded-full bg-slate-100 px-3 py-1 text-xs font-bold text-slate-600">Last 6 months</span>
+              </div>
+              <div class="mt-6 flex h-64 items-end gap-3 border-b border-l border-slate-200 px-3">
+                <div class="flex flex-1 flex-col items-center gap-2"><div class="w-full rounded-t-md bg-blue-500" style="height:44%"></div><span class="text-xs text-slate-500">Nov</span></div>
+                <div class="flex flex-1 flex-col items-center gap-2"><div class="w-full rounded-t-md bg-indigo-500" style="height:62%"></div><span class="text-xs text-slate-500">Dec</span></div>
+                <div class="flex flex-1 flex-col items-center gap-2"><div class="w-full rounded-t-md bg-violet-500" style="height:53%"></div><span class="text-xs text-slate-500">Jan</span></div>
+                <div class="flex flex-1 flex-col items-center gap-2"><div class="w-full rounded-t-md bg-cyan-500" style="height:78%"></div><span class="text-xs text-slate-500">Feb</span></div>
+                <div class="flex flex-1 flex-col items-center gap-2"><div class="w-full rounded-t-md bg-emerald-500" style="height:69%"></div><span class="text-xs text-slate-500">Mar</span></div>
+                <div class="flex flex-1 flex-col items-center gap-2"><div class="w-full rounded-t-md bg-indigo-600" style="height:88%"></div><span class="text-xs text-slate-500">Apr</span></div>
+              </div>
+            </article>
+
+            <article class="rounded-lg border border-slate-200 bg-white p-5 shadow-sm lg:col-span-3">
+              <h3 class="font-bold text-slate-950">Project Progress</h3>
+              <div class="mt-5 space-y-5">
+                <div>
+                  <div class="mb-2 flex justify-between text-sm"><span>Design</span><b>76%</b></div>
+                  <div class="h-3 rounded-full bg-slate-100"><div class="h-3 rounded-full bg-indigo-500" style="width:76%"></div></div>
+                </div>
+                <div>
+                  <div class="mb-2 flex justify-between text-sm"><span>Development</span><b>58%</b></div>
+                  <div class="h-3 rounded-full bg-slate-100"><div class="h-3 rounded-full bg-blue-500" style="width:58%"></div></div>
+                </div>
+                <div>
+                  <div class="mb-2 flex justify-between text-sm"><span>Final Changes</span><b>34%</b></div>
+                  <div class="h-3 rounded-full bg-slate-100"><div class="h-3 rounded-full bg-amber-500" style="width:34%"></div></div>
+                </div>
+                <div>
+                  <div class="mb-2 flex justify-between text-sm"><span>Live</span><b>91%</b></div>
+                  <div class="h-3 rounded-full bg-slate-100"><div class="h-3 rounded-full bg-emerald-500" style="width:91%"></div></div>
+                </div>
+              </div>
+            </article>
+          </div>
+
+          <div class="mt-4 grid gap-4 lg:grid-cols-3">
+            <article class="rounded-lg border border-red-100 bg-white p-5 shadow-sm">
+              <h3 class="flex items-center gap-2 font-bold text-red-700"><i data-lucide="server-crash" class="h-4 w-4"></i> Hosting Expiring</h3>
+              <p class="mt-2 text-sm text-slate-600">12 domains expire in the next 15 days.</p>
+            </article>
+            <article class="rounded-lg border border-amber-100 bg-white p-5 shadow-sm">
+              <h3 class="flex items-center gap-2 font-bold text-amber-700"><i data-lucide="clipboard-clock" class="h-4 w-4"></i> Pending Briefs</h3>
+              <p class="mt-2 text-sm text-slate-600">19 clients have paid but not submitted brief forms.</p>
+            </article>
+            <article class="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+              <h3 class="flex items-center gap-2 font-bold text-slate-900"><i data-lucide="message-circle-off" class="h-4 w-4"></i> No Response Clients</h3>
+              <p class="mt-2 text-sm text-slate-600">8 clients crossed the 48h no-response rule.</p>
+            </article>
+          </div>
+        </section>
+
+        <section id="pipeline" class="view">
+          <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <h3 class="text-xl font-bold">CRM Pipeline</h3>
+              <p class="text-sm text-slate-500">Complete Gmail Streak pipeline converted into a visual Kanban board. Drag cards between stages to update status.</p>
+            </div>
+            <div class="flex gap-2">
+              <button class="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-700">Filter</button>
+              <button class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-bold text-white">Add Lead</button>
+            </div>
+          </div>
+          <div id="kanbanBoard" class="flex gap-4 overflow-x-auto pb-4"></div>
+        </section>
+
+        <section id="clients" class="view">
+          <div class="grid gap-4 xl:grid-cols-3">
+            <article class="rounded-lg border border-slate-200 bg-white p-6 shadow-sm xl:col-span-1">
+              <div class="flex items-center gap-4">
+                <div class="grid h-16 w-16 place-items-center rounded-lg bg-indigo-100 text-2xl font-bold text-indigo-700">AR</div>
+                <div>
+                  <h3 class="text-xl font-bold">Ariana Retail</h3>
+                  <p class="text-sm text-slate-500">ariana@retailco.com</p>
+                </div>
+              </div>
+              <dl class="mt-6 space-y-4 text-sm">
+                <div><dt class="font-semibold text-slate-500">Phone</dt><dd class="mt-1 font-bold">+1 555 0184</dd></div>
+                <div><dt class="font-semibold text-slate-500">Company</dt><dd class="mt-1 font-bold">Ariana Retail LLC</dd></div>
+                <div><dt class="font-semibold text-slate-500">Current Stage</dt><dd class="mt-1"><span class="rounded-full bg-blue-50 px-3 py-1 text-xs font-bold text-blue-700">On Inner Pages Stage</span></dd></div>
+                <div><dt class="font-semibold text-slate-500">Assigned Team</dt><dd class="mt-1 font-bold">BA: Hamza, Designer: Sara, Dev: Bilal</dd></div>
+              </dl>
+            </article>
+
+            <article class="rounded-lg border border-slate-200 bg-white p-6 shadow-sm xl:col-span-2">
+              <h3 class="text-lg font-bold">Client Profile</h3>
+              <div class="mt-5 grid gap-4 md:grid-cols-3">
+                <div class="rounded-lg bg-slate-50 p-4"><p class="text-sm text-slate-500">Total Paid</p><b class="mt-2 block text-2xl">$4,800</b></div>
+                <div class="rounded-lg bg-slate-50 p-4"><p class="text-sm text-slate-500">Pending Amount</p><b class="mt-2 block text-2xl">$1,200</b></div>
+                <div class="rounded-lg bg-slate-50 p-4"><p class="text-sm text-slate-500">Payment History</p><b class="mt-2 block text-2xl">3 payments</b></div>
+              </div>
+              <div class="mt-6 grid gap-4 md:grid-cols-2">
+                <div class="rounded-lg border border-slate-200 p-4">
+                  <h4 class="font-bold">Brief Data</h4>
+                  <p class="mt-2 text-sm text-slate-600">Logo brief submitted. Website brief reviewed with competitor references and hosting notes.</p>
+                </div>
+                <div class="rounded-lg border border-slate-200 p-4">
+                  <h4 class="font-bold">Files</h4>
+                  <p class="mt-2 text-sm text-slate-600">Homepage mockup, inner page wireframes, sitemap document, brand references.</p>
+                </div>
+                <div class="rounded-lg border border-slate-200 p-4 md:col-span-2">
+                  <h4 class="font-bold">Communication</h4>
+                  <div class="mt-3 space-y-3 text-sm text-slate-600">
+                    <p><b>Email:</b> Sent final content request to client.</p>
+                    <p><b>Call:</b> Google Voice call completed, client asked for product upload ETA.</p>
+                    <p><b>Meeting:</b> Zoom discovery notes linked to project.</p>
+                  </div>
+                </div>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section id="briefs" class="view">
+          <div class="grid gap-4 xl:grid-cols-2">
+            <form class="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
+              <h3 class="text-lg font-bold">Logo Brief</h3>
+              <div class="mt-5 grid gap-4 md:grid-cols-2">
+                <input class="rounded-lg border border-slate-200 px-4 py-3 text-sm" placeholder="Business Name" />
+                <input class="rounded-lg border border-slate-200 px-4 py-3 text-sm" placeholder="Tagline" />
+                <input class="rounded-lg border border-slate-200 px-4 py-3 text-sm" placeholder="Industry" />
+                <input class="rounded-lg border border-slate-200 px-4 py-3 text-sm" placeholder="Color Preferences" />
+                <select class="rounded-lg border border-slate-200 px-4 py-3 text-sm"><option>Modern</option><option>Minimal</option><option>Luxury</option></select>
+                <input class="rounded-lg border border-slate-200 px-4 py-3 text-sm" placeholder="Competitors" />
+                <textarea class="min-h-28 rounded-lg border border-slate-200 px-4 py-3 text-sm md:col-span-2" placeholder="References"></textarea>
+              </div>
+              <div class="mt-5 flex gap-2"><span class="rounded-full bg-amber-50 px-3 py-1 text-xs font-bold text-amber-700">Pending</span><span class="rounded-full bg-emerald-50 px-3 py-1 text-xs font-bold text-emerald-700">Submitted</span><span class="rounded-full bg-blue-50 px-3 py-1 text-xs font-bold text-blue-700">Reviewed</span></div>
+            </form>
+
+            <form class="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
+              <h3 class="text-lg font-bold">Website Brief</h3>
+              <div class="mt-5 grid gap-4 md:grid-cols-2">
+                <input class="rounded-lg border border-slate-200 px-4 py-3 text-sm" placeholder="Pages: Home, About, Services..." />
+                <input class="rounded-lg border border-slate-200 px-4 py-3 text-sm" placeholder="Features: Forms, Booking..." />
+                <input class="rounded-lg border border-slate-200 px-4 py-3 text-sm" placeholder="Content Upload" />
+                <input class="rounded-lg border border-slate-200 px-4 py-3 text-sm" placeholder="Images" />
+                <input class="rounded-lg border border-slate-200 px-4 py-3 text-sm" placeholder="Competitors" />
+                <input class="rounded-lg border border-slate-200 px-4 py-3 text-sm" placeholder="Domain / Hosting Info" />
+                <textarea class="min-h-28 rounded-lg border border-slate-200 px-4 py-3 text-sm md:col-span-2" placeholder="Client notes"></textarea>
+              </div>
+              <button class="mt-5 rounded-lg bg-indigo-600 px-5 py-3 text-sm font-bold text-white">Save Brief</button>
+            </form>
+          </div>
+        </section>
+
+        <section id="projects" class="view">
+          <div class="grid gap-4 xl:grid-cols-3">
+            <article class="rounded-lg border border-slate-200 bg-white p-5 shadow-sm xl:col-span-2">
+              <h3 class="text-lg font-bold">Project Lifecycle</h3>
+              <div class="mt-6 grid gap-3 md:grid-cols-7">
+                <span class="rounded-lg bg-indigo-600 px-3 py-3 text-center text-xs font-bold text-white">Onboarding</span>
+                <span class="rounded-lg bg-indigo-500 px-3 py-3 text-center text-xs font-bold text-white">Discovery</span>
+                <span class="rounded-lg bg-blue-500 px-3 py-3 text-center text-xs font-bold text-white">Design</span>
+                <span class="rounded-lg bg-cyan-500 px-3 py-3 text-center text-xs font-bold text-white">Content</span>
+                <span class="rounded-lg bg-emerald-500 px-3 py-3 text-center text-xs font-bold text-white">Development</span>
+                <span class="rounded-lg bg-amber-500 px-3 py-3 text-center text-xs font-bold text-white">Final Changes</span>
+                <span class="rounded-lg bg-slate-900 px-3 py-3 text-center text-xs font-bold text-white">Live</span>
+              </div>
+              <div class="mt-6 space-y-4">
+                <div class="rounded-lg border border-slate-200 p-4">
+                  <div class="flex items-center justify-between gap-3"><b>Ecommerce Redesign</b><span class="text-sm text-slate-500">Due May 12</span></div>
+                  <div class="mt-3 h-3 rounded-full bg-slate-100"><div class="h-3 rounded-full bg-indigo-500" style="width:68%"></div></div>
+                  <p class="mt-3 text-sm text-slate-600">Assigned: Sara, Bilal, Ayesha. Notes: Product content pending from client.</p>
+                </div>
+                <div class="rounded-lg border border-slate-200 p-4">
+                  <div class="flex items-center justify-between gap-3"><b>Law Firm Website</b><span class="text-sm text-slate-500">Due May 20</span></div>
+                  <div class="mt-3 h-3 rounded-full bg-slate-100"><div class="h-3 rounded-full bg-emerald-500" style="width:84%"></div></div>
+                  <p class="mt-3 text-sm text-slate-600">Assigned: Hamza, Zain. Notes: Final page changes under review.</p>
+                </div>
+              </div>
+            </article>
+            <article class="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+              <h3 class="text-lg font-bold">Project Notes</h3>
+              <textarea class="mt-4 min-h-56 w-full rounded-lg border border-slate-200 p-4 text-sm" placeholder="Add internal notes..."></textarea>
+              <button class="mt-3 w-full rounded-lg bg-indigo-600 py-3 text-sm font-bold text-white">Add Note</button>
+            </article>
+          </div>
+        </section>
+
+        <section id="tasks" class="view">
+          <div class="rounded-lg border border-slate-200 bg-white shadow-sm">
+            <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 p-5">
+              <h3 class="text-lg font-bold">Task Management</h3>
+              <button class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-bold text-white">Create Task</button>
+            </div>
+            <div class="divide-y divide-slate-100">
+              <div class="grid gap-3 p-5 md:grid-cols-5 md:items-center"><b>Prepare homepage mockup</b><span>Sara</span><span>May 06</span><span class="rounded-full bg-amber-50 px-3 py-1 text-xs font-bold text-amber-700">In Progress</span><button class="rounded-lg border border-slate-200 px-3 py-2 text-sm">Open</button></div>
+              <div class="grid gap-3 p-5 md:grid-cols-5 md:items-center"><b>Call no-response client</b><span>Hamza</span><span>Today</span><span class="rounded-full bg-red-50 px-3 py-1 text-xs font-bold text-red-700">Pending</span><button class="rounded-lg border border-slate-200 px-3 py-2 text-sm">Open</button></div>
+              <div class="grid gap-3 p-5 md:grid-cols-5 md:items-center"><b>Deploy staging website</b><span>Bilal</span><span>May 08</span><span class="rounded-full bg-emerald-50 px-3 py-1 text-xs font-bold text-emerald-700">Done</span><button class="rounded-lg border border-slate-200 px-3 py-2 text-sm">Open</button></div>
+            </div>
+          </div>
+        </section>
+
+        <section id="communication" class="view">
+          <div class="grid gap-4 lg:grid-cols-3">
+            <article class="rounded-lg border border-slate-200 bg-white p-5 shadow-sm"><h3 class="font-bold">Emails</h3><p class="mt-3 text-sm text-slate-600">Sent and received Gmail/Zendesk emails linked to clients and projects.</p><div class="mt-4 rounded-lg bg-slate-50 p-4 text-sm">Latest: Brief reminder sent to Olivia Stone.</div></article>
+            <article class="rounded-lg border border-slate-200 bg-white p-5 shadow-sm"><h3 class="font-bold">Calls</h3><p class="mt-3 text-sm text-slate-600">Google Voice / RingCentral logs with call status and follow-up tasks.</p><div class="mt-4 rounded-lg bg-slate-50 p-4 text-sm">Missed: Marco Foods, callback due today.</div></article>
+            <article class="rounded-lg border border-slate-200 bg-white p-5 shadow-sm"><h3 class="font-bold">Meetings</h3><p class="mt-3 text-sm text-slate-600">Zoom meeting history with notes attached to project records.</p><div class="mt-4 rounded-lg bg-slate-50 p-4 text-sm">Discovery: Apex Legal, notes reviewed.</div></article>
+          </div>
+        </section>
+
+        <section id="hosting" class="view">
+          <div class="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+            <h3 class="text-lg font-bold">Hosting & Domains</h3>
+            <div class="mt-5 overflow-x-auto">
+              <table class="w-full min-w-[780px] text-left text-sm">
+                <thead class="bg-slate-50 text-slate-500"><tr><th class="px-4 py-3">Domain</th><th class="px-4 py-3">Hosting Type</th><th class="px-4 py-3">Status</th><th class="px-4 py-3">Expiry</th><th class="px-4 py-3">Alert</th></tr></thead>
+                <tbody class="divide-y divide-slate-100">
+                  <tr><td class="px-4 py-4 font-bold">arianaretail.com</td><td class="px-4 py-4">Hosting + Domain</td><td class="px-4 py-4"><span class="rounded-full bg-emerald-50 px-3 py-1 text-xs font-bold text-emerald-700">Active</span></td><td class="px-4 py-4">Jun 18, 2026</td><td class="px-4 py-4">30-day reminder</td></tr>
+                  <tr><td class="px-4 py-4 font-bold">apexlegal.us</td><td class="px-4 py-4">Our Hosting</td><td class="px-4 py-4"><span class="rounded-full bg-amber-50 px-3 py-1 text-xs font-bold text-amber-700">Expiring</span></td><td class="px-4 py-4">May 11, 2026</td><td class="px-4 py-4">Urgent renewal</td></tr>
+                  <tr><td class="px-4 py-4 font-bold">northfit.co</td><td class="px-4 py-4">Domain Only</td><td class="px-4 py-4"><span class="rounded-full bg-red-50 px-3 py-1 text-xs font-bold text-red-700">Expired</span></td><td class="px-4 py-4">Apr 29, 2026</td><td class="px-4 py-4">Escalated</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <section id="maintenance" class="view">
+          <div class="grid gap-4 lg:grid-cols-3">
+            <article class="rounded-lg border border-slate-200 bg-white p-5 shadow-sm"><p class="text-sm text-slate-500">Active Maintenance Clients</p><b class="mt-3 block text-4xl">37</b></article>
+            <article class="rounded-lg border border-slate-200 bg-white p-5 shadow-sm"><p class="text-sm text-slate-500">Open Issues</p><b class="mt-3 block text-4xl">14</b></article>
+            <article class="rounded-lg border border-red-100 bg-white p-5 shadow-sm"><p class="text-sm text-red-600">Website Not Working Alerts</p><b class="mt-3 block text-4xl">3</b></article>
+          </div>
+          <div class="mt-4 rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+            <h3 class="font-bold">Support Tickets</h3>
+            <div class="mt-4 grid gap-3 md:grid-cols-3">
+              <div class="rounded-lg bg-slate-50 p-4 text-sm"><b>Checkout page down</b><p class="mt-2 text-slate-600">Critical, assigned to Bilal.</p></div>
+              <div class="rounded-lg bg-slate-50 p-4 text-sm"><b>Plugin update request</b><p class="mt-2 text-slate-600">In progress, staging backup done.</p></div>
+              <div class="rounded-lg bg-slate-50 p-4 text-sm"><b>SSL renewal</b><p class="mt-2 text-slate-600">Scheduled for tonight.</p></div>
+            </div>
+          </div>
+        </section>
+
+        <section id="reports" class="view">
+          <div class="grid gap-4 lg:grid-cols-3">
+            <article class="rounded-lg border border-slate-200 bg-white p-5 shadow-sm"><h3 class="font-bold">Revenue Analytics</h3><p class="mt-3 text-3xl font-bold">$247k</p><p class="mt-2 text-sm text-slate-500">Quarter to date</p></article>
+            <article class="rounded-lg border border-slate-200 bg-white p-5 shadow-sm"><h3 class="font-bold">Conversion Rate</h3><p class="mt-3 text-3xl font-bold">31%</p><p class="mt-2 text-sm text-slate-500">Lead to paid client</p></article>
+            <article class="rounded-lg border border-slate-200 bg-white p-5 shadow-sm"><h3 class="font-bold">Completed Projects</h3><p class="mt-3 text-3xl font-bold">118</p><p class="mt-2 text-sm text-slate-500">This year</p></article>
+          </div>
+        </section>
+
+        <section id="settings" class="view">
+          <div class="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
+            <h3 class="text-lg font-bold">Automation Rules</h3>
+            <p class="mt-2 text-sm text-slate-600">Visual workflow builder for replacing manual Gmail follow-ups and Streak label updates.</p>
+            <div class="mt-6 grid gap-4 xl:grid-cols-3">
+              <div class="rounded-lg border border-indigo-100 bg-indigo-50 p-4">
+                <div class="flex items-center justify-between gap-3">
+                  <span class="grid h-10 w-10 place-items-center rounded-lg bg-white text-indigo-600"><i data-lucide="credit-card" class="h-5 w-5"></i></span>
+                  <i data-lucide="arrow-right" class="h-5 w-5 text-indigo-400"></i>
+                  <span class="grid h-10 w-10 place-items-center rounded-lg bg-white text-indigo-600"><i data-lucide="send" class="h-5 w-5"></i></span>
+                  <i data-lucide="arrow-right" class="h-5 w-5 text-indigo-400"></i>
+                  <span class="grid h-10 w-10 place-items-center rounded-lg bg-white text-indigo-600"><i data-lucide="file-pen-line" class="h-5 w-5"></i></span>
+                </div>
+                <b class="mt-4 block text-indigo-950">Payment -> Send Brief</b>
+                <p class="mt-1 text-sm text-indigo-700">Once payment is marked paid, logo or website brief is sent automatically.</p>
+              </div>
+              <div class="rounded-lg border border-amber-100 bg-amber-50 p-4">
+                <div class="flex items-center justify-between gap-3">
+                  <span class="grid h-10 w-10 place-items-center rounded-lg bg-white text-amber-600"><i data-lucide="message-circle-off" class="h-5 w-5"></i></span>
+                  <i data-lucide="arrow-right" class="h-5 w-5 text-amber-400"></i>
+                  <span class="grid h-10 w-10 place-items-center rounded-lg bg-white text-amber-600"><i data-lucide="bell-ring" class="h-5 w-5"></i></span>
+                  <i data-lucide="arrow-right" class="h-5 w-5 text-amber-400"></i>
+                  <span class="grid h-10 w-10 place-items-center rounded-lg bg-white text-amber-600"><i data-lucide="mail" class="h-5 w-5"></i></span>
+                </div>
+                <b class="mt-4 block text-amber-950">No Response -> Reminder</b>
+                <p class="mt-1 text-sm text-amber-800">After 24h and 48h, reminders are queued for email, call, or internal task.</p>
+              </div>
+              <div class="rounded-lg border border-red-100 bg-red-50 p-4">
+                <div class="flex items-center justify-between gap-3">
+                  <span class="grid h-10 w-10 place-items-center rounded-lg bg-white text-red-600"><i data-lucide="timer-off" class="h-5 w-5"></i></span>
+                  <i data-lucide="arrow-right" class="h-5 w-5 text-red-400"></i>
+                  <span class="grid h-10 w-10 place-items-center rounded-lg bg-white text-red-600"><i data-lucide="pause-circle" class="h-5 w-5"></i></span>
+                  <i data-lucide="arrow-right" class="h-5 w-5 text-red-400"></i>
+                  <span class="grid h-10 w-10 place-items-center rounded-lg bg-white text-red-600"><i data-lucide="columns-3" class="h-5 w-5"></i></span>
+                </div>
+                <b class="mt-4 block text-red-950">No Response -> On Hold</b>
+                <p class="mt-1 text-sm text-red-700">If client remains inactive, the project moves to Projects On Hold with an alert.</p>
+              </div>
+            </div>
+            <div class="mt-5 grid gap-4 md:grid-cols-2">
+              <label class="flex items-center justify-between rounded-lg border border-slate-200 p-4 text-sm font-semibold">Payment -> Send Brief Form <input type="checkbox" checked class="h-5 w-5 accent-indigo-600" /></label>
+              <label class="flex items-center justify-between rounded-lg border border-slate-200 p-4 text-sm font-semibold">Form Submitted -> Move to Onboard <input type="checkbox" checked class="h-5 w-5 accent-indigo-600" /></label>
+              <label class="flex items-center justify-between rounded-lg border border-slate-200 p-4 text-sm font-semibold">No response 24h -> Reminder <input type="checkbox" checked class="h-5 w-5 accent-indigo-600" /></label>
+              <label class="flex items-center justify-between rounded-lg border border-slate-200 p-4 text-sm font-semibold">No response 48h -> Reminder 2 <input type="checkbox" checked class="h-5 w-5 accent-indigo-600" /></label>
+              <label class="flex items-center justify-between rounded-lg border border-slate-200 p-4 text-sm font-semibold md:col-span-2">No response -> Move to On Hold <input type="checkbox" checked class="h-5 w-5 accent-indigo-600" /></label>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const stages = [
+      "Onboard/W4 Clearance",
+      "BA & Discovery Call",
+      "BA Done/W8 Mock",
+      "On Initial Mock",
+      "On Inner Pages Stage",
+      "Client Based Content / Products",
+      "Content Placement By Writers",
+      "On Final Changes",
+      "Live Projects",
+      "Projects On Hold",
+      "Critical",
+      "Closed After Refund / CB",
+      "Due Diligence",
+      "Touch Me Not",
+      "Website Maintenance",
+      "FU from Live/Feedback",
+      "Client's Hosting",
+      "On Our Hosting",
+      "Our Domain Only",
+      "Our Hosting + Domain",
+      "Hosting Expire",
+      "Our Hosting + Maintenance + Marketing + Other Services",
+      "Our Hosting + Maintenance",
+      "Our Maintenance Projects",
+      "Website Not Working",
+      "Lost Leads"
+    ];
+
+    const leads = [
+      { stage: "Due Diligence", name: "Olivia Stone", email: "olivia@stoneco.com", phone: "+1 555 0127", service: "Website", payment: "Pending", assigned: "Hamza", activity: "2h ago", tags: ["Urgent"] },
+      { stage: "BA & Discovery Call", name: "Marco Foods", email: "marco@foods.com", phone: "+1 555 0192", service: "Logo", payment: "Paid", assigned: "Ayesha", activity: "Today", tags: ["VIP"] },
+      { stage: "On Inner Pages Stage", name: "Ariana Retail", email: "ariana@retailco.com", phone: "+1 555 0184", service: "Website", payment: "Partial", assigned: "Sara", activity: "Yesterday", tags: ["VIP"] },
+      { stage: "Critical", name: "NorthFit Gym", email: "ops@northfit.co", phone: "+1 555 0160", service: "Website", payment: "Paid", assigned: "Bilal", activity: "35m ago", tags: ["Urgent"] },
+      { stage: "Live Projects", name: "Apex Legal", email: "hello@apexlegal.us", phone: "+1 555 0108", service: "Website", payment: "Paid", assigned: "Zain", activity: "1d ago", tags: [] },
+      { stage: "Projects On Hold", name: "Mira Beauty", email: "mira@beauty.com", phone: "+1 555 0141", service: "Logo", payment: "Pending", assigned: "Hamza", activity: "4d ago", tags: ["No Response"] },
+      { stage: "Onboard/W4 Clearance", name: "Carter Finance", email: "ops@carterfinance.com", phone: "+1 555 0114", service: "Website", payment: "Paid", assigned: "Ayesha", activity: "15m ago", tags: ["VIP"] },
+      { stage: "BA Done/W8 Mock", name: "Luna Skin Studio", email: "hello@lunaskin.com", phone: "+1 555 0136", service: "Logo", payment: "Paid", assigned: "Sara", activity: "3h ago", tags: [] },
+      { stage: "Client Based Content / Products", name: "Harbor Supply", email: "content@harborsupply.com", phone: "+1 555 0189", service: "Website", payment: "Partial", assigned: "Zain", activity: "8h ago", tags: ["Urgent"] },
+      { stage: "Client's Hosting", name: "BluePeak Dental", email: "admin@bluepeakdental.com", phone: "+1 555 0177", service: "Website", payment: "Paid", assigned: "Bilal", activity: "Today", tags: [] },
+      { stage: "On Our Hosting", name: "Urban Homes", email: "sales@urbanhomes.com", phone: "+1 555 0158", service: "Website", payment: "Paid", assigned: "Bilal", activity: "Yesterday", tags: ["VIP"] },
+      { stage: "Our Domain Only", name: "Dover Legal", email: "info@doverlegal.com", phone: "+1 555 0147", service: "Website", payment: "Paid", assigned: "Hamza", activity: "2d ago", tags: [] },
+      { stage: "Our Hosting + Domain", name: "Evergreen Spa", email: "hello@evergreenspa.com", phone: "+1 555 0152", service: "Website", payment: "Paid", assigned: "Zain", activity: "5h ago", tags: [] },
+      { stage: "Hosting Expire", name: "NorthFit Legacy", email: "billing@northfit.co", phone: "+1 555 0162", service: "Website", payment: "Pending", assigned: "Bilal", activity: "12m ago", tags: ["Urgent"] },
+      { stage: "Our Hosting + Maintenance + Marketing + Other Services", name: "Apex Growth", email: "growth@apexgrowth.com", phone: "+1 555 0169", service: "Website", payment: "Paid", assigned: "Ayesha", activity: "Today", tags: ["VIP"] },
+      { stage: "Our Hosting + Maintenance", name: "Prime Builders", email: "admin@primebuilders.com", phone: "+1 555 0105", service: "Website", payment: "Paid", assigned: "Zain", activity: "1d ago", tags: [] },
+      { stage: "Our Maintenance Projects", name: "Lakeview Clinic", email: "support@lakeviewclinic.com", phone: "+1 555 0191", service: "Website", payment: "Paid", assigned: "Bilal", activity: "6h ago", tags: [] },
+      { stage: "Website Not Working", name: "Orbit Tutors", email: "help@orbittutors.com", phone: "+1 555 0171", service: "Website", payment: "Paid", assigned: "Bilal", activity: "9m ago", tags: ["Urgent"] },
+      { stage: "Touch Me Not", name: "Silent Prospect", email: "blocked@example.com", phone: "+1 555 0100", service: "Website", payment: "Pending", assigned: "Hamza", activity: "10d ago", tags: ["No Response"] },
+      { stage: "Lost Leads", name: "Old Logo Inquiry", email: "lead@archive.com", phone: "+1 555 0133", service: "Logo", payment: "Pending", assigned: "Hamza", activity: "22d ago", tags: [] }
+    ];
+
+    const board = document.getElementById("kanbanBoard");
+
+    function badgeClass(value) {
+      if (value === "Paid") return "bg-emerald-50 text-emerald-700";
+      if (value === "Partial") return "bg-blue-50 text-blue-700";
+      if (value === "Pending") return "bg-amber-50 text-amber-700";
+      return "bg-slate-100 text-slate-700";
+    }
+
+    function renderBoard() {
+      board.innerHTML = stages.map((stage) => {
+        const stageLeads = leads.filter((lead) => lead.stage === stage);
+        return `
+          <div class="kanban-column rounded-lg border border-slate-200 bg-slate-100/70 p-3" data-stage="${stage}">
+            <div class="mb-3 flex items-center justify-between">
+              <h4 class="text-sm font-bold text-slate-800">${stage}</h4>
+              <span class="rounded-full bg-white px-2 py-1 text-xs font-bold text-slate-500">${stageLeads.length}</span>
+            </div>
+            <div class="space-y-3">
+              ${stageLeads.map((lead, index) => `
+                <article class="lead-card cursor-grab rounded-lg border border-slate-200 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md" draggable="true" data-name="${lead.name}">
+                  <div class="flex items-start justify-between gap-2">
+                    <div>
+                      <h5 class="font-bold text-slate-950">${lead.name}</h5>
+                      <p class="mt-1 text-xs text-slate-500">${lead.email}</p>
+                    </div>
+                    <span class="rounded-full px-2 py-1 text-[11px] font-bold ${badgeClass(lead.payment)}">${lead.payment}</span>
+                  </div>
+                  <div class="mt-4 grid gap-2 text-xs text-slate-600">
+                    <p><b>Phone:</b> ${lead.phone}</p>
+                    <p><b>Service:</b> ${lead.service}</p>
+                    <p><b>Assigned:</b> ${lead.assigned}</p>
+                    <p><b>Last Activity:</b> ${lead.activity}</p>
+                  </div>
+                  <div class="mt-3 flex flex-wrap gap-2">
+                    ${lead.tags.map((tag) => `<span class="rounded-full bg-red-50 px-2 py-1 text-[11px] font-bold text-red-700">${tag}</span>`).join("")}
+                    <span class="rounded-full bg-slate-100 px-2 py-1 text-[11px] font-bold text-slate-600">#${index + 1}</span>
+                  </div>
+                </article>
+              `).join("")}
+            </div>
+          </div>
+        `;
+      }).join("");
+
+      enableDragDrop();
+    }
+
+    function enableDragDrop() {
+      document.querySelectorAll(".lead-card").forEach((card) => {
+        card.addEventListener("dragstart", () => card.classList.add("dragging"));
+        card.addEventListener("dragend", () => card.classList.remove("dragging"));
+      });
+
+      document.querySelectorAll(".kanban-column").forEach((column) => {
+        column.addEventListener("dragover", (event) => {
+          event.preventDefault();
+          column.classList.add("drop-target");
+        });
+        column.addEventListener("dragleave", () => column.classList.remove("drop-target"));
+        column.addEventListener("drop", () => {
+          const card = document.querySelector(".lead-card.dragging");
+          const lead = leads.find((item) => item.name === card?.dataset.name);
+          if (lead) lead.stage = column.dataset.stage;
+          column.classList.remove("drop-target");
+          renderBoard();
+        });
+      });
+    }
+
+    function openView(viewId) {
+      const navButton = document.querySelector(`.nav-item[data-view="${viewId}"]`);
+      document.querySelectorAll(".nav-item").forEach((item) => item.classList.remove("active"));
+      document.querySelectorAll(".view").forEach((view) => view.classList.remove("active"));
+      navButton?.classList.add("active");
+      document.getElementById(viewId).classList.add("active");
+      document.getElementById("pageTitle").textContent = navButton?.textContent.trim() || "Dashboard";
+      document.getElementById("mobileViewSelect").value = viewId;
+    }
+
+    document.querySelectorAll(".nav-item").forEach((button) => {
+      button.addEventListener("click", () => openView(button.dataset.view));
+    });
+
+    document.getElementById("mobileViewSelect").addEventListener("change", (event) => {
+      openView(event.target.value);
+    });
+
+    renderBoard();
+    lucide.createIcons();
+  </script>
+</body>
+</html>
