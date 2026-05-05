@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Panel - Onboarding OS</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #f6f8fb;
+      color: #172033;
+    }
+    .nav-active { background: #eaf3ff; color: #075985; box-shadow: inset 3px 0 0 #0284c7; }
+    .route-view { display: none; }
+    .route-view.active { display: block; animation: fadeIn 160ms ease-out; }
+    .route-view.active.grid { display: grid; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <div class="min-h-screen lg:flex">
+    <aside class="fixed inset-y-0 left-0 hidden w-72 flex-col border-r border-slate-200 bg-white lg:flex">
+      <div class="border-b border-slate-200 px-6 py-5">
+        <div class="flex items-center gap-3">
+          <div class="grid h-11 w-11 place-items-center rounded-lg bg-slate-950 text-white">
+            <i data-lucide="crown" class="h-5 w-5"></i>
+          </div>
+          <div>
+            <p class="text-xs font-bold uppercase tracking-wide text-slate-500">Admin Login</p>
+            <h1 class="text-lg font-black text-slate-950">Control Panel</h1>
+          </div>
+        </div>
+      </div>
+
+      <nav id="adminNav" class="flex-1 space-y-1 overflow-y-auto px-3 py-4">
+        <a class="route-link nav-active flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-bold" href="#overview" data-route="overview" data-title="Overview"><i data-lucide="layout-dashboard" class="h-4 w-4"></i> Overview</a>
+        <a class="route-link flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-bold text-slate-600 hover:bg-slate-100" href="#workspaces" data-route="workspaces" data-title="All Workspaces"><i data-lucide="folder-kanban" class="h-4 w-4"></i> All Workspaces</a>
+        <a class="route-link flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-bold text-slate-600 hover:bg-slate-100" href="#pipeline" data-route="pipeline" data-title="Pipeline Health"><i data-lucide="git-branch" class="h-4 w-4"></i> Pipeline Health</a>
+        <a class="route-link flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-bold text-slate-600 hover:bg-slate-100" href="#integrations" data-route="integrations" data-title="Integrations"><i data-lucide="plug-zap" class="h-4 w-4"></i> Integrations</a>
+        <a class="route-link flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-bold text-slate-600 hover:bg-slate-100" href="#tracking" data-route="tracking" data-title="Tracking"><i data-lucide="radar" class="h-4 w-4"></i> Tracking</a>
+        <a class="route-link flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-bold text-slate-600 hover:bg-slate-100" href="#permissions" data-route="permissions" data-title="Permissions"><i data-lucide="lock-keyhole" class="h-4 w-4"></i> Permissions</a>
+      </nav>
+
+      <div class="m-4 rounded-lg border border-slate-200 bg-slate-50 p-4">
+        <p class="text-sm font-black">Admin can see everything</p>
+        <p class="mt-2 text-xs leading-5 text-slate-600">Customer contact, pipeline control, Jira sync, communication logs, revenue and audit history.</p>
+      </div>
+    </aside>
+
+    <main class="min-w-0 flex-1 lg:ml-72">
+      <header class="sticky top-0 z-20 border-b border-slate-200 bg-white/95 backdrop-blur">
+        <div class="flex flex-col gap-4 px-4 py-4 sm:px-6 xl:flex-row xl:items-center xl:justify-between">
+          <div>
+            <p class="text-sm font-bold text-sky-700">Workspace based onboarding system</p>
+            <h2 id="pageTitle" class="mt-1 text-2xl font-black text-slate-950">Overview</h2>
+          </div>
+          <div class="flex flex-wrap items-center gap-3">
+            <button class="flex items-center gap-2 rounded-lg bg-slate-950 px-4 py-3 text-sm font-black text-white"><i data-lucide="plus" class="h-4 w-4"></i> Create Workspace</button>
+          </div>
+        </div>
+      </header>
+
+      <div class="px-4 py-6 sm:px-6">
+        <section id="overview" class="route-view active">
+          <div class="overflow-hidden rounded-lg border border-slate-200 bg-slate-950 text-white shadow-sm">
+            <div class="grid gap-0 xl:grid-cols-[1.15fr_.85fr]">
+            <div class="p-6 md:p-8">
+              <span class="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs font-black text-sky-100"><i data-lucide="shield-check" class="h-3.5 w-3.5"></i> Admin only access</span>
+              <h3 class="mt-4 max-w-3xl text-3xl font-black leading-tight">Admin ko complete business control aur full tracking yahan se milegi.</h3>
+              <p class="mt-3 max-w-3xl text-sm leading-6 text-slate-300">Har lead, workspace, customer contact, Jira task, email, call, Zoom meeting, alert aur audit log sirf admin control panel mein visible rahega.</p>
+              <div class="mt-5 grid gap-3 sm:grid-cols-3">
+                <button class="rounded-lg bg-white px-4 py-3 text-sm font-black text-slate-950">Create Workspace</button>
+                <button class="rounded-lg border border-white/20 bg-white/10 px-4 py-3 text-sm font-black text-white">Change Stage</button>
+                <button class="rounded-lg border border-white/20 bg-white/10 px-4 py-3 text-sm font-black text-white">Export Report</button>
+              </div>
+            </div>
+            <div class="border-t border-white/10 bg-white/5 p-5 xl:border-l xl:border-t-0">
+              <div class="rounded-lg border border-white/10 bg-white/10 p-5">
+                <p class="text-xs font-black uppercase tracking-wide text-slate-300">Sensitive customer data</p>
+                <div class="mt-4 space-y-3 text-sm">
+                  <div class="flex items-center justify-between rounded-lg bg-white/10 p-3"><span>Email</span><b>client@arianaretail.com</b></div>
+                  <div class="flex items-center justify-between rounded-lg bg-white/10 p-3"><span>Phone</span><b>+1 555 0184</b></div>
+                  <div class="flex items-center justify-between rounded-lg bg-white/10 p-3"><span>Access</span><b class="text-emerald-300">Admin visible</b></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          </div>
+
+          <div class="mt-4 grid gap-4 md:grid-cols-2 xl:grid-cols-6">
+          <article class="rounded-lg border border-slate-200 bg-white p-5 shadow-sm"><p class="text-sm font-bold text-slate-500">All Leads</p><b class="mt-3 block text-3xl">428</b><p class="mt-2 text-sm text-emerald-600">+18 this week</p></article>
+          <article class="rounded-lg border border-slate-200 bg-white p-5 shadow-sm"><p class="text-sm font-bold text-slate-500">Workspaces</p><b class="mt-3 block text-3xl">86</b><p class="mt-2 text-sm text-slate-500">42 active</p></article>
+          <article class="rounded-lg border border-slate-200 bg-white p-5 shadow-sm"><p class="text-sm font-bold text-slate-500">Revenue</p><b class="mt-3 block text-3xl">$82k</b><p class="mt-2 text-sm text-emerald-600">Monthly</p></article>
+          <article class="rounded-lg border border-amber-100 bg-white p-5 shadow-sm"><p class="text-sm font-bold text-amber-700">On Hold</p><b class="mt-3 block text-3xl">11</b><p class="mt-2 text-sm text-amber-700">Need follow-up</p></article>
+          <article class="rounded-lg border border-red-100 bg-white p-5 shadow-sm"><p class="text-sm font-bold text-red-600">Critical</p><b class="mt-3 block text-3xl">5</b><p class="mt-2 text-sm text-red-600">Escalated</p></article>
+          <article class="rounded-lg border border-slate-200 bg-white p-5 shadow-sm"><p class="text-sm font-bold text-slate-500">System Load</p><b class="mt-3 block text-3xl">78%</b><p class="mt-2 text-sm text-sky-600">Healthy</p></article>
+          </div>
+        </section>
+
+        <section id="workspaces" class="route-view grid gap-4 xl:grid-cols-[1.25fr_.75fr]">
+          <article class="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+            <div class="flex flex-wrap items-center justify-between gap-3">
+              <h3 class="text-lg font-black">All Workspace Control</h3>
+              <button class="rounded-lg bg-slate-950 px-4 py-2 text-sm font-black text-white">Bulk Assign</button>
+            </div>
+            <div class="mt-5 overflow-x-auto">
+              <table class="w-full min-w-[820px] text-left text-sm">
+                <thead class="bg-slate-50 text-slate-500"><tr><th class="px-4 py-3">Workspace</th><th class="px-4 py-3">Client Contact</th><th class="px-4 py-3">Owner</th><th class="px-4 py-3">Stage</th><th class="px-4 py-3">Risk</th></tr></thead>
+                <tbody class="divide-y divide-slate-100">
+                  <tr><td class="px-4 py-4 font-black">Ariana Retail</td><td class="px-4 py-4">client@arianaretail.com<br><span class="text-slate-500">+1 555 0184</span></td><td class="px-4 py-4">Admin Control</td><td class="px-4 py-4">Inner Pages</td><td class="px-4 py-4"><span class="rounded-full bg-emerald-50 px-3 py-1 text-xs font-black text-emerald-700">Good</span></td></tr>
+                  <tr><td class="px-4 py-4 font-black">NorthFit Gym</td><td class="px-4 py-4">ops@northfit.co<br><span class="text-slate-500">+1 555 0160</span></td><td class="px-4 py-4">Admin Control</td><td class="px-4 py-4">Critical</td><td class="px-4 py-4"><span class="rounded-full bg-red-50 px-3 py-1 text-xs font-black text-red-700">High</span></td></tr>
+                  <tr><td class="px-4 py-4 font-black">Mira Beauty</td><td class="px-4 py-4">mira@beauty.com<br><span class="text-slate-500">+1 555 0141</span></td><td class="px-4 py-4">Admin Control</td><td class="px-4 py-4">On Hold</td><td class="px-4 py-4"><span class="rounded-full bg-amber-50 px-3 py-1 text-xs font-black text-amber-700">Follow-up</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </article>
+
+          <article class="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+            <h3 class="text-lg font-black">Admin Actions</h3>
+            <div class="mt-4 space-y-3 text-sm">
+              <button class="flex w-full items-center justify-between rounded-lg bg-slate-50 p-4 text-left font-black"><span>Manage owner</span><i data-lucide="user-cog" class="h-4 w-4"></i></button>
+              <button class="flex w-full items-center justify-between rounded-lg bg-slate-50 p-4 text-left font-black"><span>Change pipeline stage</span><i data-lucide="move-right" class="h-4 w-4"></i></button>
+              <button class="flex w-full items-center justify-between rounded-lg bg-slate-50 p-4 text-left font-black"><span>View communication logs</span><i data-lucide="messages-square" class="h-4 w-4"></i></button>
+              <button class="flex w-full items-center justify-between rounded-lg bg-slate-50 p-4 text-left font-black"><span>Manage permissions</span><i data-lucide="lock-keyhole" class="h-4 w-4"></i></button>
+            </div>
+          </article>
+        </section>
+
+        <section id="pipeline" class="route-view grid gap-4 xl:grid-cols-4">
+          <article class="rounded-lg border border-slate-200 bg-white p-5 shadow-sm xl:col-span-3">
+            <div class="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <h3 class="text-lg font-black">Pipeline Health by Stage</h3>
+                <p class="mt-1 text-sm text-slate-500">Admin ko stage-wise volume, stuck projects aur urgent items clearly nazar aayen.</p>
+              </div>
+              <button class="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-black">Configure Stages</button>
+            </div>
+            <div class="mt-5 grid gap-3 md:grid-cols-5">
+              <div class="rounded-lg bg-sky-50 p-4"><p class="text-xs font-black text-sky-700">Onboard</p><b class="mt-2 block text-2xl">14</b><span class="text-xs text-slate-600">New projects</span></div>
+              <div class="rounded-lg bg-violet-50 p-4"><p class="text-xs font-black text-violet-700">BA Call</p><b class="mt-2 block text-2xl">9</b><span class="text-xs text-slate-600">Discovery pending</span></div>
+              <div class="rounded-lg bg-blue-50 p-4"><p class="text-xs font-black text-blue-700">Design</p><b class="mt-2 block text-2xl">21</b><span class="text-xs text-slate-600">Mockups</span></div>
+              <div class="rounded-lg bg-emerald-50 p-4"><p class="text-xs font-black text-emerald-700">Dev</p><b class="mt-2 block text-2xl">18</b><span class="text-xs text-slate-600">Jira active</span></div>
+              <div class="rounded-lg bg-red-50 p-4"><p class="text-xs font-black text-red-700">Critical</p><b class="mt-2 block text-2xl">5</b><span class="text-xs text-slate-600">Escalated</span></div>
+            </div>
+            <div class="mt-5 rounded-lg border border-slate-200 p-4">
+              <h4 class="font-black">Admin pipeline rules</h4>
+              <div class="mt-3 grid gap-3 text-sm md:grid-cols-3">
+                <p class="rounded-lg bg-slate-50 p-3"><b>No activity 24h</b><br><span class="text-slate-600">Send internal reminder.</span></p>
+                <p class="rounded-lg bg-slate-50 p-3"><b>No activity 48h</b><br><span class="text-slate-600">Escalate to manager.</span></p>
+                <p class="rounded-lg bg-slate-50 p-3"><b>Critical stage</b><br><span class="text-slate-600">Admin approval required.</span></p>
+              </div>
+            </div>
+          </article>
+
+          <article class="rounded-lg border border-red-100 bg-white p-5 shadow-sm">
+            <h3 class="text-lg font-black text-red-700">Escalation Queue</h3>
+            <div class="mt-4 space-y-3 text-sm">
+              <div class="rounded-lg bg-red-50 p-4"><b>NorthFit Gym</b><p class="mt-1 text-red-700">Website issue, dev blocked.</p></div>
+              <div class="rounded-lg bg-amber-50 p-4"><b>Mira Beauty</b><p class="mt-1 text-amber-700">No client response for 4 days.</p></div>
+              <div class="rounded-lg bg-slate-50 p-4"><b>Harbor Supply</b><p class="mt-1 text-slate-600">Content missing from client.</p></div>
+            </div>
+          </article>
+        </section>
+
+        <section id="integrations" class="route-view grid gap-4 xl:grid-cols-4">
+          <article class="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+            <div class="flex items-center justify-between"><h3 class="font-black">Jira</h3><i data-lucide="boxes" class="h-5 w-5 text-blue-700"></i></div>
+            <p class="mt-3 text-sm leading-6 text-slate-600">Project epics, tickets, bugs and sprint status sync with each workspace.</p>
+            <span class="mt-4 inline-flex rounded-full bg-emerald-50 px-3 py-1 text-xs font-black text-emerald-700">Connected</span>
+          </article>
+          <article class="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+            <div class="flex items-center justify-between"><h3 class="font-black">Internal Email</h3><i data-lucide="mail" class="h-5 w-5 text-emerald-700"></i></div>
+            <p class="mt-3 text-sm leading-6 text-slate-600">Client emails go through system aliases while real addresses stay controlled.</p>
+            <span class="mt-4 inline-flex rounded-full bg-emerald-50 px-3 py-1 text-xs font-black text-emerald-700">Active</span>
+          </article>
+          <article class="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+            <div class="flex items-center justify-between"><h3 class="font-black">VoIP Calls</h3><i data-lucide="phone-call" class="h-5 w-5 text-amber-700"></i></div>
+            <p class="mt-3 text-sm leading-6 text-slate-600">Google Voice alternative can be connected for stable calling from Pakistan.</p>
+            <span class="mt-4 inline-flex rounded-full bg-amber-50 px-3 py-1 text-xs font-black text-amber-700">Provider needed</span>
+          </article>
+          <article class="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+            <div class="flex items-center justify-between"><h3 class="font-black">Zoom SDK</h3><i data-lucide="video" class="h-5 w-5 text-violet-700"></i></div>
+            <p class="mt-3 text-sm leading-6 text-slate-600">Schedule meetings, start calls and attach recordings inside the workspace.</p>
+            <span class="mt-4 inline-flex rounded-full bg-emerald-50 px-3 py-1 text-xs font-black text-emerald-700">Ready</span>
+          </article>
+        </section>
+
+        <section id="tracking" class="route-view">
+          <article class="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+            <h3 class="text-lg font-black">Admin Audit Log</h3>
+            <div class="mt-4 space-y-3 text-sm">
+              <div class="grid gap-3 rounded-lg bg-slate-50 p-4 md:grid-cols-4"><b>12:42 PM</b><span>Ariana Retail</span><span>Moved to Inner Pages</span><span class="font-bold text-sky-700">By Ayesha</span></div>
+              <div class="grid gap-3 rounded-lg bg-slate-50 p-4 md:grid-cols-4"><b>12:10 PM</b><span>NorthFit Gym</span><span>Marked critical</span><span class="font-bold text-red-700">By Admin</span></div>
+              <div class="grid gap-3 rounded-lg bg-slate-50 p-4 md:grid-cols-4"><b>11:55 AM</b><span>Mira Beauty</span><span>No response alert</span><span class="font-bold text-amber-700">Automation</span></div>
+            </div>
+          </article>
+        </section>
+
+        <section id="permissions" class="route-view">
+          <article class="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+            <h3 class="text-lg font-black">Permissions</h3>
+            <div class="mt-4 space-y-3 text-sm">
+              <label class="flex items-center justify-between rounded-lg bg-slate-50 p-3 font-bold">Email visible in admin <input type="checkbox" checked class="h-5 w-5 accent-sky-600"></label>
+              <label class="flex items-center justify-between rounded-lg bg-slate-50 p-3 font-bold">Phone visible in admin <input type="checkbox" checked class="h-5 w-5 accent-sky-600"></label>
+              <label class="flex items-center justify-between rounded-lg bg-slate-50 p-3 font-bold">Audit tracking enabled <input type="checkbox" checked class="h-5 w-5 accent-sky-600"></label>
+            </div>
+          </article>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const routes = Array.from(document.querySelectorAll(".route-view"));
+    const links = Array.from(document.querySelectorAll(".route-link"));
+    const pageTitle = document.getElementById("pageTitle");
+
+    function openRoute(routeId, updateHash = true) {
+      const nextRoute = routes.some((route) => route.id === routeId) ? routeId : "overview";
+      routes.forEach((route) => route.classList.toggle("active", route.id === nextRoute));
+      links.forEach((link) => {
+        const isActive = link.dataset.route === nextRoute;
+        link.classList.toggle("nav-active", isActive);
+        link.classList.toggle("text-slate-600", !isActive);
+      });
+
+      const activeLink = links.find((link) => link.dataset.route === nextRoute);
+      pageTitle.textContent = activeLink?.dataset.title || "Overview";
+      if (updateHash) history.replaceState(null, "", `#${nextRoute}`);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    links.forEach((link) => {
+      link.addEventListener("click", (event) => {
+        event.preventDefault();
+        openRoute(link.dataset.route);
+      });
+    });
+
+    window.addEventListener("hashchange", () => openRoute(location.hash.slice(1), false));
+    openRoute(location.hash.slice(1) || "overview", false);
+    lucide.createIcons();
+  </script>
+</body>
+</html>
